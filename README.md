@@ -79,7 +79,7 @@ Tudo que configura a lista (nada de conteúdo) fica num arquivo só,
   {<tipo de conteúdo>}
   {<descrição do conteúdo>}
   {<assunto/tópico>}
-  {<nome do professor>}
+  {Prof. <nome do professor>}                         % inclua Prof./Profa.
   {\includegraphics[width=2.0cm]{/caminho/logo-do-curso.pdf}}        % 4. logo do curso
 ```
 
@@ -124,7 +124,7 @@ O número do crachá avança sozinho a cada `\question` — `"01"`, `"02"`,
 dois nós do TikZ são ancorados na mesma coordenada de baseline, então
 o alinhamento é garantido por construção, não por ajuste visual). O
 cabeçalho da faixa superior (`<disciplina> ▪ <tipo de conteúdo> ▪
-<assunto>`) e o rodapé (`<instituição> ▪ <curso> ▪ Prof. <professor>`
+<assunto>`) e o rodapé (`<instituição> ▪ <curso> ▪ <professor>`
 à esquerda, `Slide X de N` à direita) são montados automaticamente a
 partir dos metadados globais.
 

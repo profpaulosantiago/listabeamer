@@ -12,3 +12,8 @@
 *.xdv
 *.bbl
 *.blg
+
+# Arquivos de swap de editores
+*.swp
+*.swo
+*~

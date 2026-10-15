@@ -1,0 +1,84 @@
+% ============================================================================
+% main.tex -- Exemplo de uso do tema beamerthemeIFCEBaturite
+%
+% ESTE ARQUIVO É SÓ UMA DEMONSTRAÇÃO DO TEMPLATE: os textos/imagens abaixo
+% são conteúdo dummy (lorem ipsum, "fotos" genéricas em TikZ) só para dar
+% uma ideia realista do resultado final -- não é uma lista de exercícios
+% real. Cada lista futura deve ser um projeto separado, reaproveitando
+% este .sty. As logomarcas (institucional e de curso) NÃO vêm com o
+% template -- ficam num diretório externo à sua escolha; ajuste os
+% caminhos em \IFCEativosInstitucionais e no 8º campo de
+% \IFCEmetadados abaixo.
+%
+% Compilar com XeLaTeX (necessário para as fontes Carlito / Open Sans):
+%   xelatex main.tex
+% ============================================================================
+\documentclass{beamer}
+\usetheme{IFCEBaturite} % define o tamanho de papel correto (16:9, escala do PPTX)
+
+% Logomarca e ícone institucionais (sempre os mesmos -- IFCE Baturité):
+% aponte para onde você guarda esses arquivos fora do repositório.
+% Aqui ficam como \IFCEplaceholder só porque este é o template
+% genérico, sem nenhum arquivo de imagem embutido.
+\IFCEativosInstitucionais
+  {\IFCEplaceholder[4.0cm]{logo da instituição}}   % logomarca da capa (a real é mais larga/achatada;
+                                                    % \IFCEplaceholder força altura = 0,55x largura, por
+                                                    % isso o tamanho de demonstração é menor que 7,25cm)
+  {\textcolor{ifcegreen}{\rule{0.3cm}{0.3cm}}}          % ícone minúsculo do rodapé
+
+% Metadados globais: definidos uma única vez, reaproveitados
+% automaticamente no cabeçalho/rodapé de todos os slides de questão.
+% A logomarca do curso (8º campo) é conteúdo livre -- troque
+% \IFCEplaceholder{...} por \includegraphics{caminho/da/logo} quando uma
+% lista de exercícios real for iniciada.
+\IFCEmetadados
+  {IFCE Baturité}                          % instituição
+  {Técnico Integrado em Comércio}           % curso/turma
+  {Física II/Complementar}                  % disciplina
+  {Lista de Exercícios}                     % tipo de conteúdo
+  {Enem e UECE}                             % descrição do conteúdo
+  {Vetores}                                 % assunto/tópico
+  {Paulo Santiago}                          % professor
+  {\IFCEplaceholder[2.0cm]{logo do curso}}  % logomarca do curso (placeholder)
+
+\begin{document}
+
+% ---------------------------------------------------------------------
+% Slide de título
+% ---------------------------------------------------------------------
+\CapaIFCE{\IFCEimagemDummy{17.87cm}{13.0cm}}
+
+% ---------------------------------------------------------------------
+% Slides de questão -- numeração "01", "02", ... automática
+% ---------------------------------------------------------------------
+\question
+  {ENEM 2023}
+  {Um bloco de massa $m$ é abandonado do repouso no topo de um plano
+   inclinado sem atrito, que faz um ângulo $\theta$ com a horizontal.
+   Sobre o bloco atuam três forças: o peso $\vec{P}$, a força normal
+   $\vec{N}$ e, ao longo do movimento, uma força de resistência do ar
+   $\vec{F}_r$, sempre oposta à velocidade.
+
+   Considerando a decomposição do peso nas direções paralela e
+   perpendicular ao plano, é correto afirmar que a componente que
+   acelera o bloco ao longo da rampa é}
+  {\IFCEimagemDummy{16.0cm}{10.5cm}}
+
+\question
+  {UECE 2022.1}
+  {Dois vetores $\vec{A}$ e $\vec{B}$ possuem módulos $8\,\text{N}$ e
+   $6\,\text{N}$, respectivamente, e formam entre si um ângulo de
+   $90^\circ$. Determine o módulo do vetor resultante
+   $\vec{R} = \vec{A} + \vec{B}$ e o ângulo que $\vec{R}$ forma com
+   $\vec{A}$.}
+  {\textbf{Resolução}
+
+   Como os vetores são perpendiculares, aplica-se o Teorema de
+   Pitágoras para obter o módulo da resultante:
+   \[
+     R = \sqrt{A^2 + B^2} = \sqrt{8^2 + 6^2} = \sqrt{100} = 10\,\text{N}
+   \]
+   e o ângulo $\alpha$ entre $\vec{R}$ e $\vec{A}$ satisfaz
+   $\tan\alpha = B/A = 6/8 = 0{,}75$, logo $\alpha \approx 36{,}9^\circ$.}
+
+\end{document}

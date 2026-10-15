@@ -1,0 +1,307 @@
+% ============================================================================
+% beamerthemeIFCEBaturite.sty
+%
+% Tema Beamer para listas de exercícios do IFCE Campus Baturité, com
+% layouts de título, questão e (futuramente) gabarito. Projetado para
+% dupla exibição: projeção e leitura em celular — por isso os tamanhos
+% de fonte grandes e absolutos.
+%
+% -----------------------------------------------------------------------
+% Este tema usa coordenadas em cm ABSOLUTOS (não frações de
+% \paperwidth/\paperheight), reproduzindo a escala física do PPTX
+% original: 33,87 x 19,05 cm (16:9, o tamanho de slide informado pelo
+% PowerPoint). O Beamer não aceita "paperwidth"/"paperheight"
+% como opção de \documentclass (só entende "aspectratio", que fixa a
+% altura em ~9,6cm) — por isso o próprio tema força o tamanho de papel
+% correto via o pacote "geometry" logo abaixo. Basta usar:
+%
+%   \documentclass{beamer}
+%   \usetheme{IFCEBaturite}
+%
+% sem nenhuma opção de papel no \documentclass.
+% -----------------------------------------------------------------------
+%
+% Cores: verde institucional #37A033 (extraído da logomarca) e verde
+% claro #E2EFDA (mesmo tom, clareado — accent6 "Mais Claro 80%" do tema
+% Office original).
+%
+% Tipografia (fonte, tamanho em pt, múltiplo de entrelinha -> altura de
+% linha em pt, usando a convenção "múltiplo 1 = 1,2x o tamanho da
+% fonte", equivalente ao espaçamento "simples" do PowerPoint/Word):
+%   Nome do curso (capa, ao lado da logomarca)   Open Sans 16, m.1    -> 19.2pt
+%   Demais textos de identificação (capa)        Carlito   24, m.1,15-> 33.12pt
+%   Cabeçalho/rodapé das faixas (questão)        Carlito   15, m.1   -> 18pt
+%   Número da questão (dentro do crachá)         Carlito   40, m.0,9 -> 43.2pt
+%   Título/edição da questão (ao lado do crachá) Carlito   20, m.1,15-> 27.6pt
+%   Corpo da questão (colunas de conteúdo)       Carlito   24, m.1,15-> 33.12pt
+% ============================================================================
+
+\ProvidesPackage{beamerthemeIFCEBaturite}[2026/09/17 v2.0 Tema IFCE Baturite]
+
+\RequirePackage{tikz}
+\usetikzlibrary{calc}
+\RequirePackage{xcolor}
+\RequirePackage{ifthen}
+\RequirePackage{graphicx}
+
+% Força o tamanho físico real do slide original (16:9, escala do
+% PPTX), sobrescrevendo o tamanho pequeno padrão do Beamer.
+\RequirePackage{geometry}
+\geometry{paperwidth=33.87cm, paperheight=19.05cm,
+          margin=0cm, head=0pt, headsep=0pt, foot=0pt, footskip=0pt}
+
+% Requer compilação com XeLaTeX ou LuaLaTeX (fontspec para Carlito/Open Sans).
+\RequirePackage{fontspec}
+
+% --- Fontes ---------------------------------------------------------------
+\setmainfont{Carlito}
+\setsansfont{Carlito}
+\IfFontExistsTF{Open Sans}
+  {\newfontfamily\IFCEopensans{Open Sans}}
+  {\newfontfamily\IFCEopensans{Carlito}} % fallback silencioso
+
+% --- Cores ------------------------------------------------------------------
+\definecolor{ifcegreen}{HTML}{37A033}      % verde institucional (textos)
+\definecolor{ifcegreenlight}{HTML}{E2EFDA} % verde claro (faixas de fundo)
+
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=ifcegreen}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+\setbeamertemplate{headline}{}
+\setbeamercolor{background canvas}{bg=white}
+\frenchspacing % evita espaço extra depois de abreviações como "Prof."
+
+% --- Tamanhos de fonte absolutos (fonte, entrelinha) -----------------------
+% entrelinha = 1.2 * tamanho * múltiplo (ver cabeçalho do arquivo)
+\newcommand{\IFCEfontCurso}{\IFCEopensans\fontsize{16}{19.2}\selectfont}      % 16, m.1
+\newcommand{\IFCEfontIdentCapa}{\fontsize{24}{33.12}\selectfont}             % 24, m.1,15
+\newcommand{\IFCEfontFaixa}{\fontsize{15}{18}\selectfont}                    % 15, m.1
+\newcommand{\IFCEfontBadge}{\fontsize{40}{43.2}\selectfont}                  % 40, m.0,9
+\newcommand{\IFCEfontTituloQuestao}{\fontsize{20}{27.6}\selectfont}          % 20, m.1,15
+\newcommand{\IFCEfontCorpo}{\fontsize{24}{33.12}\selectfont}                 % 24, m.1,15
+
+% --- Contador de questão (avança a cada \question, formato "01","02",...) --
+\newcounter{IFCEquestao}
+\newcommand{\IFCEnumeroquestao}{\ifnum\value{IFCEquestao}<10 0\fi\arabic{IFCEquestao}}
+
+% --- Separador "quadradinho" (lembra a logomarca do IFCE) -------------------
+% Desenhado com \rule (não depende de o glifo existir na fonte) e herda a
+% cor do texto em volta.
+\newcommand{\IFCEsep}{\,\raisebox{0.15em}{\rule{0.32em}{0.32em}}\,}
+
+% --- Metadados globais (definidos uma vez, reaproveitados em todo slide) ---
+\newcommand{\IFCEinstituicao}{}
+\newcommand{\IFCEcurso}{}
+\newcommand{\IFCEdisciplina}{}
+\newcommand{\IFCEtipoConteudo}{}
+\newcommand{\IFCEdescricaoConteudo}{}
+\newcommand{\IFCEassunto}{}
+\newcommand{\IFCEprofessor}{}
+\newcommand{\IFCElogoCurso}{} % conteúdo livre (normalmente \includegraphics{caminho})
+
+% Logomarca e ícone institucionais (IFCE Baturité): são os MESMOS em
+% toda lista, mas o template não vem com nenhum arquivo de imagem --
+% os PDFs/SVGs ficam num diretório externo, fora do repositório do
+% template (git não deveria carregar binários repetidos a cada
+% clone). Defina o caminho uma vez, no preâmbulo de cada lista, com
+% \IFCEativosInstitucionais{...}{...} (veja abaixo).
+\newcommand{\IFCElogoInstituicao}{} % conteúdo livre, ex. \includegraphics[width=7.25cm]{caminho}
+\newcommand{\IFCEiconeInstituicao}{} % conteúdo livre, ex. \includegraphics[width=0.37cm]{caminho}
+
+% \IFCEativosInstitucionais{logomarca da capa}{ícone minúsculo do rodapé}
+\newcommand{\IFCEativosInstitucionais}[2]{%
+  \renewcommand{\IFCElogoInstituicao}{#1}%
+  \renewcommand{\IFCEiconeInstituicao}{#2}%
+}
+
+% \IFCEmetadados{instituição}{curso/turma}{nome da disciplina}%
+%               {tipo de conteúdo}{descrição do conteúdo}%
+%               {assunto/tópico}{nome do professor}%
+%               {logomarca do curso -- conteúdo livre, ex. \includegraphics{...}}
+\newcommand{\IFCEmetadados}[8]{%
+  \renewcommand{\IFCEinstituicao}{#1}%
+  \renewcommand{\IFCEcurso}{#2}%
+  \renewcommand{\IFCEdisciplina}{#3}%
+  \renewcommand{\IFCEtipoConteudo}{#4}%
+  \renewcommand{\IFCEdescricaoConteudo}{#5}%
+  \renewcommand{\IFCEassunto}{#6}%
+  \renewcommand{\IFCEprofessor}{#7}%
+  \renewcommand{\IFCElogoCurso}{#8}%
+}
+
+% ============================================================================
+% \CapaIFCE{conteúdo à direita}
+%
+% Slide de título. Todos os textos de identificação vêm de \IFCEmetadados
+% (definido antes, uma vez, no preâmbulo) — só a ilustração da capa é
+% passada como argumento.
+% ============================================================================
+\newcommand{\CapaIFCE}[1]{%
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture, overlay]
+  \coordinate (PO) at (current page.north west);
+
+  % Faixa superior larga (0 a 3,0cm)
+  \fill[ifcegreenlight] (PO) rectangle ($(PO)+(\paperwidth,-3.0cm)$);
+  % Faixa inferior (18,35 a 19,05cm) -- mesma cor, presente em todo slide
+  \fill[ifcegreenlight] ($(PO)+(0,-18.35cm)$) rectangle ($(PO)+(\paperwidth,-19.05cm)$);
+
+  % Logomarca da instituição
+  \node[anchor=north west, inner sep=0pt] at ($(PO)+(0.5cm,-0.5cm)$)
+    {\IFCElogoInstituicao};
+
+  % Logomarca do CURSO (varia conforme a lista/curso -- vem de \IFCEmetadados,
+  % conteúdo livre; deixe \IFCEplaceholder{...} até ter a arte definitiva),
+  % canto superior direito, a 0,5cm da margem direita
+  \node[anchor=north west, inner sep=0pt] at ($(PO)+(31.35cm,-0.3133cm)$)
+    {\IFCElogoCurso};
+
+  % Nome do curso, alinhado à direita, Open Sans 16/19.2
+  \node[anchor=north east, text width=7.90cm, align=right, font=\IFCEfontCurso]
+        at ($(PO)+(33.37cm,-0.8903cm)$) {\IFCEcurso};
+
+  % Coluna esquerda de metadados (Carlito 24/33.12)
+  \node[anchor=north west, text width=14.00cm, align=left,
+        font=\color{ifcegreen}\IFCEfontIdentCapa]
+        at ($(PO)+(0.5cm,-4.00cm)$) {\IFCEtipoConteudo};
+  \node[anchor=north west, text width=14.00cm, align=left,
+        font=\bfseries\IFCEfontIdentCapa]
+        at ($(PO)+(0.5cm,-5.30cm)$) {\IFCEdescricaoConteudo};
+  \node[anchor=north west, text width=14.00cm, align=left,
+        font=\color{ifcegreen}\IFCEfontIdentCapa]
+        at ($(PO)+(0.5cm,-9.20cm)$) {\IFCEdisciplina};
+  \node[anchor=north west, text width=14.00cm, align=left,
+        font=\bfseries\IFCEfontIdentCapa]
+        at ($(PO)+(0.5cm,-10.50cm)$) {\IFCEassunto};
+  \node[anchor=south west, text width=14.00cm, align=left, font=\IFCEfontIdentCapa]
+        at ($(PO)+(0.5cm,-17.00cm)$) {\IFCEprofessor};
+
+  % Coluna direita: conteúdo livre (imagem/ilustração da capa),
+  % até 0,5cm da margem direita
+  \node[anchor=north west, text width=17.87cm, align=left]
+        at ($(PO)+(15.50cm,-4.00cm)$) {#1};
+\end{tikzpicture}
+\end{frame}%
+}
+
+% ============================================================================
+% \question{título/edição da questão}{conteúdo esquerdo}{conteúdo direito}
+%
+% Slide de questão. Cabeçalho e rodapé são montados automaticamente a
+% partir dos metadados globais. O número do crachá avança sozinho
+% ("01", "02", ...) e sua linha de base é a mesma do título ao lado,
+% por construção (ambos ancorados em "base"/"base west" na mesma
+% coordenada).
+% ============================================================================
+\newcommand{\question}[3]{%
+\stepcounter{IFCEquestao}%
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture, overlay]
+  \coordinate (PO) at (current page.north west);
+
+  % Faixa superior fina (0 a 0,7cm): disciplina + tipo + assunto
+  \fill[ifcegreenlight] (PO) rectangle ($(PO)+(\paperwidth,-0.7cm)$);
+  \node[anchor=west, font=\color{ifcegreen}\IFCEfontFaixa] at ($(PO)+(0.5cm,-0.35cm)$)
+    {\IFCEdisciplina\IFCEsep\IFCEtipoConteudo\IFCEsep\IFCEassunto};
+
+  % Faixa inferior (18,35 a 19,05cm)
+  \fill[ifcegreenlight] ($(PO)+(0,-18.35cm)$) rectangle ($(PO)+(\paperwidth,-19.05cm)$);
+
+  % Crachá (fundo verde, cantos arredondados) -- sem texto embutido
+  \node[anchor=north west, fill=ifcegreen, rounded corners=3pt,
+        minimum width=2.0cm, minimum height=2.0cm, inner sep=0pt]
+        at ($(PO)+(0.5cm,-1.2cm)$) {};
+
+  % Número da questão: define a linha de base de referência
+  \node[anchor=base, font=\color{white}\bfseries\IFCEfontBadge]
+        at ($(PO)+(1.5cm,-2.85cm)$) {\IFCEnumeroquestao};
+
+  % Título/edição da questão -- MESMA linha de base do número acima
+  \node[anchor=base west, text width=14.00cm, align=left,
+        font=\color{ifcegreen}\IFCEfontTituloQuestao]
+        at ($(PO)+(2.5cm,-2.85cm)$) {#1};
+
+  % Corpo esquerdo (enunciado), justificado, Carlito 24/33.12, com recuo de
+  % 2,0cm só na primeira linha (indent do parágrafo, não de toda a caixa).
+  % Dimensões confirmadas: 16,0 x 14,6cm, canto superior esquerdo em (0,5;3,4)cm.
+  % (o \indent explícito é necessário porque, dentro de um nó do TikZ, a
+  % primeira linha do texto normalmente NÃO recebe o recuo automático de
+  % parágrafo -- só as continuações depois de uma linha em branco.)
+  \node[anchor=north west, text width=16.00cm, align=justify, font=\IFCEfontCorpo]
+        at ($(PO)+(0.5cm,-3.40cm)$) {\setlength{\parindent}{2.0cm}\indent#2};
+
+  % Corpo direito, justificado, sem recuo. Dimensões confirmadas: 16,0 x
+  % 14,6cm, canto superior esquerdo em (17,0;3,4)cm.
+  \node[anchor=north west, text width=16.00cm, align=justify, font=\IFCEfontCorpo]
+        at ($(PO)+(17.00cm,-3.40cm)$) {#3};
+
+  % Ícone institucional minúsculo, centralizado dentro da margem de 0,5cm
+  \node[anchor=south west, inner sep=0pt] at ($(PO)+(0.0652cm,-18.95cm)$)
+    {\IFCEiconeInstituicao};
+
+  % Rodapé esquerdo: instituição / curso / professor
+  \node[anchor=west, font=\color{ifcegreen}\IFCEfontFaixa] at ($(PO)+(0.5cm,-18.70cm)$)
+    {\IFCEinstituicao\IFCEsep\IFCEcurso\IFCEsep Prof.\ \IFCEprofessor};
+
+  % Rodapé direito: contagem de slides, a 0,5cm da margem direita
+  \node[anchor=east, font=\color{ifcegreen}\IFCEfontFaixa] at ($(PO)+(33.37cm,-18.70cm)$)
+    {Slide \insertframenumber\ de \inserttotalframenumber};
+\end{tikzpicture}
+\end{frame}%
+}
+
+% ============================================================================
+% \IFCEplaceholder[largura]{legenda}
+%
+% Caixa tracejada simples para marcar onde entraria uma figura/imagem
+% específica de uma questão. O template-base não inclui nenhuma imagem
+% de conteúdo, apenas a marca institucional.
+%
+% (A altura é 0,55x a largura. Isso é calculado com \pgfmathsetlength --
+% não com concatenação direta tipo "0.55#1" -- porque quando a largura já
+% tem casas decimais (ex. "2.0cm"), a concatenação de texto gera um
+% número com dois pontos decimais ("0.552.0cm"), que o TeX não consegue
+% interpretar como dimensão válida.)
+% ============================================================================
+\newlength{\IFCEplaceholderht}
+\newlength{\IFCEplaceholderwd}
+\newlength{\IFCEplaceholdertw}
+\newcommand{\IFCEplaceholder}[2][\linewidth]{%
+  \pgfmathsetlength{\IFCEplaceholderwd}{#1}%
+  \pgfmathsetlength{\IFCEplaceholderht}{0.55*(#1)}%
+  \pgfmathsetlength{\IFCEplaceholdertw}{(#1)-0.4cm}%
+  \begin{tikzpicture}
+    \node[draw=ifcegreen, dashed, rounded corners=3pt, text=ifcegreen,
+          minimum width=\IFCEplaceholderwd, minimum height=\IFCEplaceholderht,
+          text width=\IFCEplaceholdertw, align=center,
+          font=\IFCEfontFaixa]
+      {#2};
+  \end{tikzpicture}%
+}
+
+% ============================================================================
+% \IFCEimagemDummy{largura}{altura}
+%
+% "Foto" genérica desenhada em TikZ (moldura + sol + montanhas), só para
+% preencher espaços de imagem em rascunhos/demonstrações e dar uma ideia
+% mais realista do resultado final -- não é para uso na lista de verdade.
+% ============================================================================
+\newcommand{\IFCEimagemDummy}[2]{%
+  \begin{tikzpicture}
+    \draw[draw=ifcegreen, fill=ifcegreenlight, rounded corners=3pt, line width=0.8pt]
+      (0,0) rectangle (#1,#2);
+    \begin{scope}
+      \clip (0,0) rectangle (#1,#2);
+      \fill[orange!80!yellow] (0.18*#1,0.72*#2) circle (0.11*#2);
+      \fill[ifcegreen!55!black]
+        (-0.05*#1,0) -- (0.32*#1,0.58*#2) -- (0.55*#1,0.20*#2) --
+        (0.80*#1,0.52*#2) -- (1.05*#1,0.05*#2) -- (1.05*#1,0) -- cycle;
+      \fill[ifcegreen]
+        (-0.05*#1,0) -- (0.48*#1,0.38*#2) -- (0.72*#1,0.12*#2) --
+        (1.05*#1,0.30*#2) -- (1.05*#1,0) -- cycle;
+    \end{scope}
+  \end{tikzpicture}%
+}
+
+\endinput

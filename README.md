@@ -59,60 +59,56 @@ sem nenhuma opção de papel no `\documentclass`.
 
 ## Comandos disponíveis
 
-### Ativos institucionais — `\IFCEativosInstitucionais{logo}{ícone}` (uma vez, no preâmbulo)
+### `config.tex` — as 4 imagens + os metadados desta lista
+
+Tudo que configura a lista (nada de conteúdo) fica num arquivo só,
+`config.tex`, que o `main.tex` carrega com `\input{config.tex}`. As
+4 imagens ficam juntas, no topo, cada uma numa linha:
 
 ```latex
 \IFCEativosInstitucionais
-  {\includegraphics[width=7.25cm]{/caminho/externo/logo-ifce-baturite.pdf}}
-  {\includegraphics[width=0.37cm]{/caminho/externo/icone-ifce-mini.pdf}}
-```
+  {\includegraphics[width=7.25cm]{/caminho/logo-ifce-baturite.pdf}}  % 1. logo da instituição
+  {\includegraphics[width=0.37cm]{/caminho/icone-ifce-mini.pdf}}     % 2. ícone minúsculo (rodapé)
 
-A logomarca institucional (capa) e o ícone minúsculo (rodapé dos
-slides de questão) são **sempre os mesmos**, em qualquer lista — mas
-os arquivos de imagem não vêm com o template, ficam num diretório
-externo, fora do controle de versão (veja "Fluxo de trabalho"). Esses
-dois campos são conteúdo livre, como o `\IFCEplaceholder` usado no
-`main.tex` de demonstração.
+\def\ImagemCapa{\includegraphics[width=17.87cm]{/caminho/imagem-de-capa.pdf}}  % 3. imagem de capa
 
-### Metadados globais — `\IFCEmetadados` (uma vez, no preâmbulo)
-
-```latex
 \IFCEmetadados
-  {IFCE Baturité}              % instituição
-  {<curso/turma>}               % curso/turma
-  {<nome da disciplina>}        % disciplina
-  {<tipo de conteúdo>}          % tipo de conteúdo
-  {<descrição do conteúdo>}     % descrição do conteúdo
-  {<assunto/tópico>}            % assunto/tópico
-  {<nome do professor>}         % professor
-  {\includegraphics{...}}       % logomarca do curso (8º campo)
+  {IFCE Baturité}                                      % instituição
+  {<curso/turma>}
+  {<nome da disciplina>}
+  {<tipo de conteúdo>}
+  {<descrição do conteúdo>}
+  {<assunto/tópico>}
+  {<nome do professor>}
+  {\includegraphics[width=2.0cm]{/caminho/logo-do-curso.pdf}}        % 4. logo do curso
 ```
 
-Esses oito campos alimentam **automaticamente** o slide de título e o
-cabeçalho/rodapé de todo slide de questão — não são repetidos em cada
-comando.
+No template (sem nenhuma imagem real ainda), os 4 campos vêm como
+`\IFCEplaceholder{...}` — troque cada um por `\includegraphics[width=...]{caminho}`
+quando tiver a arte. O caminho pode ser relativo a `config.tex` (ex.
+`fig/logo.pdf`) ou absoluto.
 
-O **8º campo** (logomarca do curso) é conteúdo livre e fica de fora do
-template-base de propósito: cada curso tem a sua própria arte, então
-esse não é um elemento institucional fixo. Use
-`\IFCEplaceholder[2.0cm]{logo do curso}` (como no `main.tex` de
-demonstração) até ter a arte definitiva; numa lista de exercícios real,
-troque por `\includegraphics{caminho/da/logo-do-curso}`. O nome do
-curso (2º campo) continua sendo só texto.
+A logomarca institucional (1) e o ícone (2) são **sempre os mesmos**
+em qualquer lista — os arquivos não vêm com o template, ficam num
+diretório seu, fora do controle de versão (veja "Fluxo de trabalho").
+A imagem de capa (3) e a logo do curso (4) mudam a cada lista.
 
-Os campos `<disciplina>`, `<tipo de conteúdo>` e `<assunto>` aparecem
-separados pelo símbolo "▪" (`\IFCEsep`, desenhado com `\rule` — não
-depende do glifo existir na fonte) tanto na faixa superior do slide de
-questão quanto, com instituição/curso/professor, no rodapé.
+Os 7 primeiros campos de `\IFCEmetadados` alimentam **automaticamente**
+o slide de título e o cabeçalho/rodapé de todo slide de questão — não
+são repetidos em cada `\question`. Os campos `<disciplina>`, `<tipo
+de conteúdo>` e `<assunto>` aparecem separados pelo símbolo "▪"
+(`\IFCEsep`, desenhado com `\rule` — não depende do glifo existir na
+fonte), tanto na faixa superior do slide de questão quanto, com
+instituição/curso/professor, no rodapé.
 
 ### Slide de título — `\CapaIFCE{conteúdo à direita}`
 
 ```latex
-\CapaIFCE{\IFCEplaceholder{imagem de capa}}
+\CapaIFCE{\ImagemCapa}
 ```
 
-Só recebe a ilustração da capa; todo o resto vem de
-`\IFCEativosInstitucionais` e `\IFCEmetadados`.
+Só recebe a ilustração da capa (normalmente `\ImagemCapa`, definida em
+`config.tex`); todo o resto vem dos comandos de `config.tex` acima.
 
 ### Slide de questão — `\question{título/edição}{coluna esquerda}{coluna direita}`
 
@@ -214,17 +210,15 @@ cd lista-vetores
 #    push de volta pra cá — ela vira um projeto independente)
 rm -rf .git
 
-# 3. Editar main.tex:
-#    - \IFCEativosInstitucionais: caminho para a logo e o ícone
-#      institucionais (ficam guardados num diretório fixo seu, fora
-#      de qualquer repositório — a mesma logomarca serve pra toda
-#      lista, então não precisa copiá-la a cada clone);
-#    - \IFCEmetadados: metadados da lista + logomarca do curso
-#      (8º campo, específica desse curso);
-#    - as questões.
-#    Renomear main.tex se quiser (ex.: lista-vetores.tex).
+# 3. Editar config.tex: as 4 imagens (logo e ícone institucionais --
+#    normalmente já apontam pro seu diretório fixo, não precisa mexer;
+#    imagem de capa e logo do curso -- específicas desta lista) e os
+#    metadados (\IFCEmetadados).
+#
+# 4. Editar main.tex: só as questões. Renomear se quiser
+#    (ex.: lista-vetores.tex).
 
-# 4. Compilar normalmente
+# 5. Compilar normalmente
 xelatex main.tex && xelatex main.tex
 ```
 

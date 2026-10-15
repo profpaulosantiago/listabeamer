@@ -1,37 +1,20 @@
 % ============================================================================
-% config.tex -- configuração desta lista (edite isto, não o main.tex)
-%
-% Tudo que muda de lista pra lista -- ou que é fixo mas fica fora do
-% repositório -- vai aqui. O main.tex (ou o .tex renomeado da lista) só
-% deve ter conteúdo: capa + questões.
+% config.tex -- as 4 imagens e os metadados desta lista.
+% Edite só este arquivo (o main.tex tem apenas as questões).
 % ============================================================================
 
-% --- Ativos institucionais (logo + ícone, sempre os mesmos) -----------------
-% Ficam num arquivo externo, fora do controle de versão -- o mesmo
-% caminho serve pra toda lista, então normalmente você NÃO precisa
-% mexer nessa linha depois de configurá-la uma vez.
-%
-% Ajuste o caminho abaixo para o arquivo .tex externo que contém a sua
-% chamada de \IFCEativosInstitucionais com os caminhos reais das
-% imagens, por exemplo:
-%
-%   % conteúdo de /home/santiago/algum-lugar/institucional.tex:
-%   \IFCEativosInstitucionais
-%     {\includegraphics[width=7.25cm]{/home/santiago/algum-lugar/logo-ifce-baturite.pdf}}
-%     {\includegraphics[width=0.37cm]{/home/santiago/algum-lugar/icone-ifce-mini.pdf}}
-%
-% Se o arquivo não existir (como no próprio template, sem nenhuma lista
-% real configurada ainda), caem placeholders genéricos no lugar --
-% a compilação nunca quebra por causa disso.
-\InputIfFileExists{/CAMINHO/EXTERNO/institucional.tex}{}{%
-  \IFCEativosInstitucionais
-    {\IFCEplaceholder[4.0cm]{logo da instituição}}
-    {\textcolor{ifcegreen}{\rule{0.3cm}{0.3cm}}}
-}
+% --- As 4 imagens ------------------------------------------------------------
+% Troque cada \IFCEplaceholder{...} por \includegraphics[width=...]{caminho}
+% quando tiver a imagem de verdade. O caminho pode ser relativo a este
+% arquivo (ex. fig/logo.pdf) ou absoluto (ex. /home/santiago/.../logo.pdf).
 
-% --- Metadados desta lista (edite a cada lista nova) ------------------------
-% Os valores abaixo são os do exemplo de demonstração deste próprio
-% template (main.tex); numa lista real, troque todos os 8 campos.
+\IFCEativosInstitucionais
+  {\IFCEplaceholder[4.0cm]{logo da instituição}}     % 1. logo da instituição (capa)
+  {\textcolor{ifcegreen}{\rule{0.3cm}{0.3cm}}}        % 2. ícone minúsculo (rodapé, mesma logo em miniatura)
+
+\def\ImagemCapa{\IFCEimagemDummy{17.87cm}{13.0cm}}    % 3. imagem de capa desta lista
+
+% --- Metadados da lista -------------------------------------------------------
 \IFCEmetadados
   {IFCE Baturité}                          % instituição
   {Técnico Integrado em Comércio}           % curso/turma
@@ -40,5 +23,4 @@
   {Enem e UECE}                             % descrição do conteúdo
   {Vetores}                                 % assunto/tópico
   {Paulo Santiago}                          % professor
-  {\IFCEplaceholder[2.0cm]{logo do curso}}  % logomarca do curso (troque por
-                                             % \includegraphics{...} quando tiver a arte)
+  {\IFCEplaceholder[2.0cm]{logo do curso}}  % 4. logo do curso

@@ -147,19 +147,16 @@
   % Faixa inferior (18,35 a 19,05cm) -- mesma cor, presente em todo slide
   \fill[ifcegreenlight] ($(PO)+(0,-18.35cm)$) rectangle ($(PO)+(\paperwidth,-19.05cm)$);
 
-  % Logomarca da instituição
+  % Logomarca da instituição -- altura SEMPRE 2,0cm (força via \resizebox,
+  % não importa a largura vinda do config.tex), alinhada à esquerda
   \node[anchor=north west, inner sep=0pt] at ($(PO)+(0.5cm,-0.5cm)$)
-    {\IFCElogoInstituicao};
+    {\resizebox{!}{2.0cm}{\IFCElogoInstituicao}};
 
   % Logomarca do CURSO (varia conforme a lista/curso -- vem de \IFCEmetadados,
-  % conteúdo livre; deixe \IFCEplaceholder{...} até ter a arte definitiva),
-  % canto superior direito, a 0,5cm da margem direita
-  \node[anchor=north west, inner sep=0pt] at ($(PO)+(31.35cm,-0.3133cm)$)
-    {\IFCElogoCurso};
-
-  % Nome do curso, alinhado à direita, Open Sans 16/19.2
-  \node[anchor=north east, text width=7.90cm, align=right, font=\IFCEfontCurso]
-        at ($(PO)+(33.37cm,-0.8903cm)$) {\IFCEcurso};
+  % conteúdo livre; deixe \IFCEplaceholder{...} até ter a arte definitiva) --
+  % altura SEMPRE 2,0cm, alinhada à direita, a 0,5cm da margem direita
+  \node[anchor=north east, inner sep=0pt] at ($(PO)+(33.37cm,-0.3133cm)$)
+    {\resizebox{!}{2.0cm}{\IFCElogoCurso}};
 
   % Coluna esquerda de metadados (Carlito 24/33.12)
   \node[anchor=north west, text width=14.00cm, align=left,

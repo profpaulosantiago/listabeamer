@@ -1,5 +1,5 @@
 % ============================================================================
-% main.tex -- Exemplo de uso do tema beamerthemeIFCEBaturite
+% main.tex -- Exemplo de uso do tema beamerthemeIFCEBaturite (v2.1)
 %
 % ESTE ARQUIVO É SÓ UMA DEMONSTRAÇÃO DO TEMPLATE: os textos/imagens abaixo
 % são conteúdo dummy (lorem ipsum, "fotos" genéricas em TikZ) só para dar
@@ -10,7 +10,19 @@
 % A configuração (ativos institucionais + metadados) fica em config.tex,
 % não aqui -- este arquivo só tem conteúdo (capa + questões).
 %
-% Compilar com XeLaTeX (necessário para as fontes Carlito / Open Sans):
+% Mostra os quatro usos principais do tema:
+%   1) \question{título}{conteúdo}         -- questão curta, 1 slide só
+%   2) \question{título}{conteúdo}         -- questão longa, continua no
+%                                              slide seguinte automaticamente
+%   3) \question{título}{conteúdo}         -- com figure + \caption
+%   4) \question*{título}{esquerda}{direita} -- uso manual, duas caixas
+%                                                independentes
+% Todas usam o ambiente alternativas + \itemCorreto, e o documento termina
+% com \gabarito.
+%
+% Compilar com XeLaTeX, DUAS vezes seguidas (o \gabarito depende da segunda
+% passada para ter o número final de questões e as respostas registradas):
+%   xelatex main.tex
 %   xelatex main.tex
 % ============================================================================
 \documentclass{beamer}
@@ -25,43 +37,127 @@
 \CapaIFCE{\ImagemCapa}
 
 % ---------------------------------------------------------------------
-% Slides de questão -- numeração "01", "02", ... automática
+% 1) Questão curta -- cabe tranquilamente em 1 slide só
 % ---------------------------------------------------------------------
 \question
   {ENEM 2023}
-  {Um bloco de massa $m$ é abandonado do repouso no topo de um plano
-   inclinado sem atrito, que faz um ângulo $\theta$ com a horizontal.
-   Sobre o bloco atuam três forças: o peso $\vec{P}$, a força normal
-   $\vec{N}$ e, ao longo do movimento, uma força de resistência do ar
-   $\vec{F}_r$, sempre oposta à velocidade.
-
-   Considerando a decomposição do peso nas direções paralela e
-   perpendicular ao plano, é correto afirmar que a componente que
-   acelera o bloco ao longo da rampa é}
-  {\IFCEimagemDummy{16.0cm}{10.5cm}}
-
-\question
-  {UECE 2022.1}
   {Dois vetores $\vec{A}$ e $\vec{B}$ possuem módulos $8\,\text{N}$ e
    $6\,\text{N}$, respectivamente, e formam entre si um ângulo de
    $90^\circ$. Assinale a alternativa que indica corretamente o módulo
    do vetor resultante $\vec{R} = \vec{A} + \vec{B}$.
 
-   \begin{enumerate}[label=\alph{enumi})]
+   \begin{alternativas}
      \item $7\,\text{N}$
      \item $9\,\text{N}$
-     \item $10\,\text{N}$
+     \itemCorreto $10\,\text{N}$
      \item $12\,\text{N}$
      \item $14\,\text{N}$
-   \end{enumerate}}
-  {\textbf{Resolução}
+   \end{alternativas}}
 
-   Como os vetores são perpendiculares, aplica-se o Teorema de
-   Pitágoras para obter o módulo da resultante:
-   \[
-     R = \sqrt{A^2 + B^2} = \sqrt{8^2 + 6^2} = \sqrt{100} = 10\,\text{N}
-   \]
-   e o ângulo $\alpha$ entre $\vec{R}$ e $\vec{A}$ satisfaz
-   $\tan\alpha = B/A = 6/8 = 0{,}75$, logo $\alpha \approx 36{,}9^\circ$.}
+% ---------------------------------------------------------------------
+% 2) Questão longa -- enche as duas colunas do primeiro slide e continua
+%    sozinha no slide seguinte (crachá repete o número, título ganha
+%    "[continuação]", slide anterior mostra "[continua >]")
+% ---------------------------------------------------------------------
+\question
+  {UECE 2022.1}
+  {O estudo da composição e decomposição de vetores é fundamental para a
+   análise de qualquer sistema físico sujeito a múltiplas forças
+   simultâneas. Considere um bloco de massa $m$ apoiado sobre um plano
+   inclinado que faz um ângulo $\theta$ com a horizontal, inicialmente em
+   repouso, e que passa a se mover sob a ação da gravidade.
+
+   Sobre esse bloco atuam, no mínimo, três forças distintas: o peso
+   $\vec{P}$, de módulo $P = mg$, sempre orientado verticalmente para
+   baixo; a força normal $\vec{N}$, exercida pela superfície do plano,
+   perpendicular a essa superfície; e, caso exista atrito entre o bloco e
+   o plano, uma força de atrito $\vec{F}_{at}$, orientada ao longo da
+   superfície e sempre oposta ao sentido do movimento (ou da tendência de
+   movimento, no caso estático).
+
+   Para analisar esse sistema, é conveniente decompor o peso $\vec{P}$ em
+   duas componentes: uma componente paralela ao plano inclinado, de
+   módulo $P_x = mg\sin\theta$, responsável por acelerar o bloco ao longo
+   da rampa; e uma componente perpendicular ao plano, de módulo
+   $P_y = mg\cos\theta$, que é equilibrada pela força normal $\vec{N}$
+   quando o bloco permanece em contato com a superfície (ou seja,
+   $N = mg\cos\theta$ na ausência de outras forças perpendiculares ao
+   plano).
+
+   Essa decomposição vetorial é a base de praticamente todos os problemas
+   de plano inclinado estudados no Ensino Médio e também é empregada, com
+   pequenas adaptações, em situações mais gerais, como o movimento de um
+   bloco sobre uma rampa curva (decompondo as forças na direção tangente
+   e na direção normal à trajetória em cada ponto) ou a análise de um
+   corpo em equilíbrio sustentado por dois ou mais cabos formando ângulos
+   diferentes com a vertical.
+
+   Em todos esses casos, o procedimento é o mesmo: escolhe-se um sistema
+   de referência conveniente (em geral, com um dos eixos alinhado à
+   direção do movimento ou à superfície de contato), decompõe-se cada
+   força nesse sistema e aplica-se a Segunda Lei de Newton,
+   $\sum \vec{F} = m\vec{a}$, separadamente em cada eixo.
+
+   Com base nesse raciocínio, considerando o plano inclinado sem atrito
+   descrito no início do enunciado, assinale a alternativa que expressa
+   corretamente o módulo da aceleração do bloco ao longo da rampa.
+
+   \begin{alternativas}
+     \item $a = g$
+     \item $a = g\cos\theta$
+     \itemCorreto $a = g\sin\theta$
+     \item $a = g\tan\theta$
+     \item $a = g(\sin\theta + \cos\theta)$
+   \end{alternativas}}
+
+% ---------------------------------------------------------------------
+% 3) Questão com figura + \caption (legenda sem "Figure:", alinhada à
+%    direita, 11pt -- ajuste feito no .sty)
+% ---------------------------------------------------------------------
+\question
+  {ENEM 2022}
+  {Observe o diagrama de corpo livre do bloco representado na figura a
+   seguir, no qual estão indicadas as três forças que atuam sobre ele
+   durante o deslizamento em um plano inclinado sem atrito.
+
+   \begin{figure}
+   \IFCEimagemDummy{10.0cm}{6.0cm}
+   \caption{Autoria própria (2026).}
+   \end{figure}
+
+   Com base no diagrama, assinale a alternativa correta sobre a relação
+   entre o peso $\vec{P}$, a normal $\vec{N}$ e a componente do peso
+   perpendicular ao plano, $P_y$.
+
+   \begin{alternativas}
+     \itemCorreto $N = P_y$, pois o bloco não acelera na direção
+       perpendicular ao plano.
+     \item $N = P$, independentemente do ângulo do plano.
+     \item $N > P_y$, pois a normal também equilibra o atrito.
+     \item $N = 0$, já que o plano não tem atrito.
+     \item $N < P_y$, pois parte do peso acelera o bloco.
+   \end{alternativas}}
+
+% ---------------------------------------------------------------------
+% 4) Uso manual \question*{título}{esquerda}{direita} -- duas caixas
+%    independentes (aqui: enunciado + alternativas à esquerda, ilustração
+%    maior à direita, sem nenhum conteúdo "vazando" de uma coluna à outra)
+% ---------------------------------------------------------------------
+\question*
+  {UECE 2023.2}
+  {Um corpo de peso $P = 100\,\text{N}$ está em equilíbrio, suspenso por
+   dois cabos que formam ângulos diferentes com a vertical. Assinale a
+   relação correta entre as trações $T_1$ e $T_2$ nos dois cabos.
+
+   \begin{alternativas}
+     \item $T_1 = T_2$, sempre.
+     \itemCorreto* $T_1 \neq T_2$, em geral.
+     \item $T_1 + T_2 = P$.
+     \item $T_1 = P$ e $T_2 = 0$.
+     \item Não há equilíbrio nesse caso.
+   \end{alternativas}}
+  {\IFCEimagemDummy{15.0cm}{13.0cm}}
+
+\gabarito
 
 \end{document}

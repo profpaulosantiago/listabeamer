@@ -15,7 +15,7 @@ repositório (veja "Fluxo de trabalho" abaixo).
 ```
 .
 ├── beamerthemeIFCEBaturite.sty   # o tema
-├── main.tex                       # exemplo/ponto de partida (capa + 2 questões, tudo genérico)
+├── main.tex                       # exemplo/ponto de partida (capa + 4 questões + gabarito, tudo genérico)
 ├── main.pdf                       # PDF já compilado do exemplo, pra conferir sem compilar
 ├── .gitignore                     # ignora lixo de compilação (.aux, .log, .nav, ...)
 └── README.md
@@ -110,32 +110,140 @@ instituição/curso/professor, no rodapé.
 Só recebe a ilustração da capa (normalmente `\ImagemCapa`, definida em
 `config.tex`); todo o resto vem dos comandos de `config.tex` acima.
 
-### Slide de questão — `\question{título/edição}{coluna esquerda}{coluna direita}`
+### Slide de questão — duas formas
+
+#### Uso padrão: `\question{título/edição}{conteúdo}`
 
 ```latex
 \question
   {<edição/informação da questão>}   % ex.: "ENEM 2023", "UECE 2022.1"
-  {<enunciado da questão>}
-  {<conteúdo/imagem/resposta>}
+  {<enunciado da questão, com \begin{alternativas}...\end{alternativas} no fim>}
 ```
 
-O número do crachá avança sozinho a cada `\question` — `"01"`, `"02"`,
-... — e sua linha de base é **sempre igual** à do título ao lado (os
-dois nós do TikZ são ancorados na mesma coordenada de baseline, então
-o alinhamento é garantido por construção, não por ajuste visual). O
-cabeçalho da faixa superior (`<disciplina> ▪ <tipo de conteúdo> ▪
-<assunto>`) e o rodapé (`<instituição> ▪ <curso> ▪ <professor>`
-à esquerda, `Slide X de N` à direita) são montados automaticamente a
-partir dos metadados globais.
+É um **texto corrido**: o conteúdo enche primeiro a coluna esquerda,
+continua na direita e, se ainda sobrar, abre sozinho outro(s)
+slide(s) seguinte(s) — sem precisar de nenhum comando extra. Nos
+slides de continuação, o crachá repete o mesmo número e o título
+ganha `[continuação]`; o slide anterior mostra `[continua >]` no
+canto superior direito, na mesma linha de base do título. O corpo
+fica **sempre em 24pt** — a fonte nunca é reduzida para caber; quem
+decide onde corta é o próprio mecanismo (`\vsplit` do TeX, medindo a
+altura real do texto composto), nunca o autor da lista.
 
-As duas colunas de conteúdo têm dimensões **exatas e fixas**: 16,0 ×
-14,6cm cada, com cantos superiores esquerdos em (0,5cm; 3,4cm) e
-(17,0cm; 3,4cm), respectivamente. A **primeira coluna** (esquerda)
-recebe um recuo de **2,0cm na primeira linha de cada parágrafo**
-(`\parindent` local, com `\indent` explícito logo no início — dentro
-de um nó do TikZ a primeira linha não herda o recuo automático de
-parágrafo, só as continuações depois de linha em branco, por isso o
-`\indent` extra é necessário); a segunda coluna não tem recuo.
+O texto é **justificado** (o `\question` anula o `\raggedright` que o
+Beamer aplica por padrão) e todo **parágrafo novo** recebe recuo de
+**2,0cm** — em qualquer coluna ou slide; um parágrafo que apenas
+*continua* de uma coluna/slide para o seguinte não recebe recuo.
+
+Para forçar manualmente a passagem para a próxima coluna/slide antes
+do ponto onde o texto estouraria sozinho (por exemplo, para manter
+uma figura e seu `\caption` juntos, sem o texto ficando cortado no
+meio), use:
+
+```latex
+\vfill\penalty-10000
+```
+
+em qualquer ponto do conteúdo.
+
+#### Uso manual: `\question*{título/edição}{coluna esquerda}{coluna direita}`
+
+```latex
+\question*
+  {<edição/informação da questão>}
+  {<conteúdo da coluna esquerda>}
+  {<conteúdo da coluna direita>}
+```
+
+As duas caixas são **independentes** — nada passa de uma coluna para
+a outra, e não há corte automático. Use quando quiser decidir
+exatamente o que vai em cada coluna (ex.: enunciado à esquerda,
+figura grande à direita). Como não há `\vsplit` aqui, é
+responsabilidade de quem escreve a lista garantir que o conteúdo de
+cada coluna caiba na altura disponível (~14,6cm) — o TikZ não avisa
+se o texto ultrapassar o rodapé, então vale a pena conferir
+visualmente o PDF gerado. Vale a mesma regra de recuo do uso manual
+original: 2,0cm na primeira linha dos parágrafos da coluna esquerda;
+coluna direita sem recuo.
+
+Em ambas as formas, o número do crachá avança sozinho a cada questão
+**nova** (`"01"`, `"02"`, ...) — continuações da mesma questão
+repetem o número — e sua linha de base é sempre igual à do título ao
+lado (dois nós do TikZ ancorados na mesma coordenada de baseline). O
+cabeçalho (`<disciplina> ▪ <tipo de conteúdo> ▪ <assunto>`) e o
+rodapé (`<instituição> ▪ <curso> ▪ <professor>` à esquerda, `Slide X
+de N` à direita) são montados automaticamente a partir dos metadados
+globais, em ambas as formas.
+
+### Alternativas — `alternativas`, `\itemCorreto`, `\itemCorreto*`
+
+```latex
+\begin{alternativas}
+  \item primeira alternativa.
+  \itemCorreto segunda alternativa.   % marca esta como a resposta correta
+  \item terceira alternativa.
+\end{alternativas}
+```
+
+Ambiente de lista com rótulos `a)`, `b)`, `c)`, ... Cada alternativa
+nunca é cortada ao meio por uma quebra de coluna/slide, e a primeira
+alternativa sempre fica junto do início da questão (nunca sozinha,
+"órfã", no topo da coluna/slide seguinte).
+
+- `\itemCorreto` marca a alternativa correta da questão que está
+  sendo montada — essa letra vai para o `\gabarito` automaticamente.
+- `\itemCorreto*` (com asterisco) marca uma alternativa correta
+  **sem gabarito oficial disponível** — aparece no `\gabarito` com um
+  `*` ao lado da letra, e uma nota de rodapé é adicionada
+  automaticamente ao(s) slide(s) de gabarito avisando disso.
+
+Uma questão sem nenhum `\itemCorreto`/`\itemCorreto*` aparece no
+gabarito com `?` no lugar da letra.
+
+### Gabarito — `\gabarito`
+
+```latex
+\gabarito   % uma vez, no fim do documento
+```
+
+Monta sozinho o(s) slide(s) de gabarito, no formato "número – letra",
+na ordem em que as questões aparecem no documento (mudou a ordem das
+questões? Basta recompilar — o gabarito acompanha). Cabem até 70
+respostas por slide (7 colunas × 10 linhas); se a lista tiver mais
+questões que isso, o `\gabarito` abre quantos slides forem
+necessários sozinho. O crachá desses slides mostra `GAB` em vez de um
+número.
+
+**Exige duas compilações seguidas** (`xelatex main.tex` duas vezes):
+na primeira passada o LaTeX ainda não sabe quantas questões existem
+nem quais são as respostas; na segunda, já sabe e monta o gabarito
+corretamente.
+
+### Legendas de figura/tabela (`\caption`)
+
+Figuras e tabelas usam os ambientes nativos do LaTeX (`figure`,
+`table`) normalmente, com a fonte/crédito no próprio `\caption`:
+
+```latex
+\begin{figure}
+\includegraphics[width=10cm]{fig/arquivo.pdf}
+\caption{SOBRENOME, N. Disponível em: www.site.com.br. Acesso em:
+  1 jan. 2020 (adaptado).}
+\end{figure}
+```
+
+O tema ajusta a aparência da legenda: sem o rótulo `Figure:` na
+frente, alinhada à direita, em 11pt.
+
+Para um crédito de texto **sem** figura (ex.: fonte de uma citação),
+use:
+
+```latex
+\par{\raggedleft\fontsize{15}{18}\selectfont Fonte: ...\par}
+```
+
+(o `\par` inicial é obrigatório — sem ele, o `\raggedleft` vaza para
+o parágrafo anterior).
 
 ### `\IFCEplaceholder[largura]{legenda}`
 
@@ -186,8 +294,13 @@ logomarca da instituição no rodapé dos slides de questão, que fica
 **centralizada** dentro dessa faixa de 0,5cm (não colada na borda).
 
 As posições verticais e as dimensões das colunas de conteúdo do
-slide de questão (16,0 × 14,6cm cada, ver acima) já foram conferidas
-e confirmadas — não são mais um ajuste pendente.
+slide de questão já foram conferidas e confirmadas — não são mais
+um ajuste pendente. Cada coluna tem 15,75cm de largura (14,6cm de
+altura nominal), com 1,0cm de espaço entre elas: canto superior
+esquerdo da coluna da esquerda em (0,5cm; 3,4cm), da direita em
+(17,25cm; 3,4cm). No uso automático (`\question`), o texto corrido
+é cortado a 14,45cm — uma pequena folga em relação aos 14,6cm
+nominais — para nunca encostar no rodapé.
 
 ## Faixas superior/inferior
 
@@ -231,22 +344,8 @@ Qualquer melhoria no template em si (novo recurso do `.sty`, ajuste
 de posição, etc.) é feita **aqui**, neste repositório, nunca dentro
 do clone de uma lista específica.
 
-## Pendências conhecidas (propositalmente fora deste template ainda)
+## Pendências conhecidas
 
-- **Continuação automática de questão longa** (`[continua>]` /
-  `[continuação]`, inserida sozinha quando o conteúdo não cabe em um
-  slide): fica para uma próxima rodada. A ideia é usar `\vsplit` do
-  TeX para medir onde o conteúdo "estoura" a altura fixa da coluna e
-  cortar ali — funciona bem para texto corrido, com a ressalva de que
-  uma imagem grande bem no ponto de corte pode exigir ajuste manual
-  pontual.
-- **Slide de gabarito**: a classe `exam` (com `\choice`,
-  `\CorrectChoice`, etc.) é incompatível com `\documentclass{beamer}`
-  — são duas classes diferentes, não dá pra combinar. A alternativa
-  equivalente é um mecanismo próprio: cada `\question` grava a
-  resposta certa num arquivo auxiliar (como bibliografia/sumário
-  fazem), e um comando `\gabaritoIFCE` no fim do documento lê esse
-  arquivo e monta a tabela sozinho. Ainda não implementado no
-  template — uma versão manual (`\GabaritoIFCE`, sem contador
-  automático) já foi usada numa lista específica como solução
-  provisória, fora deste repositório.
+Nenhuma pendência conhecida no momento. A continuação automática de
+questão longa e o slide de gabarito (antes listados aqui) já foram
+implementados — veja "Slide de questão" e "Gabarito" acima.
